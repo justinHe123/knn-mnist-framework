@@ -2,7 +2,7 @@ import processing.core.PApplet;
 
 import java.util.List;
 
-public class TestClassifier {
+public class    TestClassifier {
     public static void main(String[] args) {
         Classifier classifier;
         String prediction = "";

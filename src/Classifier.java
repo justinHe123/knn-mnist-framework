@@ -15,10 +15,14 @@ public class Classifier {
 
     public void addTrainingData(List<DataPoint> points) {
         // TODO: add all points from input to the training data
+        for (DataPoint point : points){
+            trainingData.add(point);
+        }
     }
 
     public void addTrainingData(DataPoint point) {
         // TODO: add all points from input to the training data
+        trainingData.add(point);
     }
 
     public void addTrainingData(String label, DImage img) {
@@ -29,8 +33,18 @@ public class Classifier {
         if (trainingData.size() == 0) return "no training data";
 
         // TODO: write a k-nearest-neighbor classifier.  Return its prediction of "0" to "9"
+        double minDistance = Integer.MAX_VALUE;
+        String correctLabel = "no prediction";
+        for (DataPoint point : trainingData){
+            short[][] d2 = point.getData().getBWPixelGrid();
+            double distance = distance(pixels, d2);
+            if (distance < minDistance){
+                minDistance = distance;
+                correctLabel = point.getLabel();
+            }
+        }
 
-        return "no prediction";  // replace this line
+        return correctLabel;  // replace this line
     }
 
     public String classify(DImage img) {
@@ -39,8 +53,14 @@ public class Classifier {
 
     public double distance(short[][] d1, short[][] d2) {
         // TODO:  Use the n-dimensional Euclidean distance formula to find the distance between d1 and d2
-
-        return -1;
+        double squaredSums = 0;
+        for (int r = 0; r < d1.length; r++){
+            for (int c = 0; c < d1[r].length; c++){
+                double delta = d1[r][c] - d2[r][c];
+                squaredSums += (delta)*(delta);
+            }
+        }
+        return Math.sqrt(squaredSums);
     }
 
     public void test(List<DataPoint> test) {

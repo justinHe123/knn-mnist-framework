@@ -52,6 +52,16 @@ public class DataLoader {
 
                     Add the DataPoint to your dataset list.
          */
+             String[] coords = lines[a].split(",");
+             String correctLabel = coords[0];
+             short[][] pixels = new short[28][28];
+             for (int b = 1; b < coords.length; b++){
+                pixels[(b - 1)/28][(b - 1)%28] = Short.parseShort(coords[b]);
+             }
+             DImage img = new DImage(28, 28);
+             img.setPixels(pixels);
+             DataPoint point = new DataPoint(correctLabel, img);
+             dataset.add(point);
         }
 
         return dataset;
