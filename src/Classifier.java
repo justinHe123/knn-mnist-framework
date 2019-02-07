@@ -33,18 +33,59 @@ public class Classifier {
         if (trainingData.size() == 0) return "no training data";
 
         // TODO: write a k-nearest-neighbor classifier.  Return its prediction of "0" to "9"
-        double minDistance = Integer.MAX_VALUE;
-        String correctLabel = "no prediction";
+        DataPoint closestPoint = null;
+
+        ArrayList<DataPoint> closePoints = new ArrayList<DataPoint>();
+        int integer = 0;
+        int furthestIndex = 0;
         for (DataPoint point : trainingData){
-            short[][] d2 = point.getData().getBWPixelGrid();
-            double distance = distance(pixels, d2);
-            if (distance < minDistance){
-                minDistance = distance;
-                correctLabel = point.getLabel();
+            if(closePoints.size() < n){
+                closePoints.add(point);
+            } else {
+                if (integer == 0) {
+                    furthestIndex = furthestIndex(closePoints, pixels);
+                    integer++;
+                }
+                short[][] d1 = closePoints.get(furthestIndex).getData().getBWPixelGrid();
+                short[][] d2 = point.getData().getBWPixelGrid();
+
+                if (distance(d2, pixels) < distance(d1, pixels)){
+                    closePoints.remove(furthestIndex);
+                    closePoints.add(point);
+                    integer--;
+                }
             }
         }
+        return mostFrequentLabel(closePoints);
+    }
 
-        return correctLabel;  // replace this line
+    public String mostFrequentLabel(ArrayList<DataPoint> points){
+        int[] count = new int[10];
+        for (DataPoint point : points){
+            count[Integer.parseInt(point.getLabel())]++;
+        }
+        int mostFreq = 0;
+        for (int i = 1; i < count.length; i++){
+            if(count[i] > count[mostFreq]){
+                mostFreq = i;
+            }
+        }
+        return Integer.toString(mostFreq);
+    }
+
+    public int furthestIndex(ArrayList<DataPoint> points, short[][] pixels){
+        int furthestIndex = -1;
+        double furthestDistance = 0;
+        for (int i = 0; i < points.size(); i++){
+            DataPoint p = points.get(i);
+            short[][] d2 = p.getData().getBWPixelGrid();
+            double distance = distance(pixels, d2);
+            if (distance > furthestDistance){
+                furthestDistance = distance;
+                furthestIndex = i;
+            }
+        }
+        return furthestIndex;
     }
 
     public String classify(DImage img) {
